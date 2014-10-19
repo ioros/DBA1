@@ -1,0 +1,11 @@
+select AlbumID, Title, AlbumDescription from Albums
+where match(Title,AlbumDescription)
+against('Infinity');
+
+select AlbumID, Title, AlbumDescription from Albums
+where match(Title,AlbumDescription)
+against('rock');
+
+select AlbumID, Title, AlbumDescription from Albums
+where match(Title,AlbumDescription)
+against('the sixties');
