@@ -1,0 +1,13 @@
+create view BigAlbums as 
+select A.ArtistName, B.Title, B.NumberOfSongs
+from Artists as A
+join Albums as B on (A.ArtistID=B.ArtistID)
+where B.NumberOfSongs = (select max(NumberOfSongs) from Albums);
+
+drop view if exists BigAlbums;
+
+create view LongAlbums as 
+select A.ArtistName, B.Title, B.NumberOfSongs
+from Artists as A
+join Albums as B on (A.ArtistID=B.ArtistID)
+where B.NumberOfSongs = (select max(NumberOfSongs) from Albums);
