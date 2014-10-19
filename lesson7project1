@@ -1,0 +1,4 @@
+select A.ArtistName, count(B.ArtistID) as Albums
+from Artists as A
+join Albums as B on (A.ArtistID=B.ArtistID)
+group by A.ArtistName;
