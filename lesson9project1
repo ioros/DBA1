@@ -1,0 +1,25 @@
+drop procedure if exists AddNewAlbum;
+
+delimiter //
+
+create procedure AddNewAlbum(
+	NameOfArtist varchar(50),
+	AlbumName varchar(50),
+	NumberOfSongs int,
+	YearReleased year(4)
+)
+begin
+	declare Artist_ID int;
+	
+	select ArtistID into Artist_ID
+	from Artists
+	where ArtistName=NameOfArtist;
+	
+	insert into Albums (ArtistID, Title, NumberOfSongs, YearReleased)
+	values (Artist_ID, AlbumName, NumberOfSongs, YearReleased);
+end;
+//
+
+delimiter ;
+
+call AddNewAlbum('Asia', 'Omega', 12, 2010);
