@@ -1,0 +1,5 @@
+update CustomerAccounts set CurrentCredit=case
+     when CurrentCredit >= 1 and CurrentCredit <= 15 then CurrentCredit+1
+     when CurrentCredit >= 16 and CurrentCredit <= 30 then CurrentCredit+2
+     when CurrentCredit >= 31 then round(CurrentCredit*0.10)+CurrentCredit
+     end;
