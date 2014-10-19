@@ -1,0 +1,4 @@
+select A.CustomerID, A.FirstName, A.LastName, count(P.CustomerID) as NumberOfPurchases
+from ATunesCustomers as A
+left join Purchases as P on (A.CustomerID=P.CustomerID)
+group by A.CustomerID order by NumberOfPurchases desc, A.LastName asc limit 0,5;
