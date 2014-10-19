@@ -1,0 +1,23 @@
+delimiter //
+
+drop procedure if exists QuerySchema;
+
+create procedure QuerySchema(
+	SelectedSchema varchar(50)
+)
+begin
+	if SelectedSchema='TABLES' then select table_name, table_type, engine from information_schema.TABLES where table_schema='jszkodzi';
+	elseif SelectedSchema='COLUMNS' then select column_name, data_type, character_maximum_length from information_schema.COLUMNS where table_schema='jszkodzi';
+	elseif SelectedSchema='VIEWS' then select table_name, is_updatable, substring(view_definition,27,50) as definition from information_schema.VIEWS where table_schema='jszkodzi';
+	elseif SelectedSchema='ROUTINES' then select routine_name, routine_type, routine_definition from information_schema.ROUTINES;
+	end if;
+		
+end //
+
+delimiter ;
+
+call QuerySchema('TABLES');
+call QuerySchema('COLUMNS');
+call QuerySchema('VIEWS');
+call QuerySchema('ROUTINES')\G	
+	
