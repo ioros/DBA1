@@ -1,0 +1,30 @@
+drop procedure if exists AddAlbum;
+
+delimiter //
+
+create procedure AddAlbum(
+	NameOfArtist varchar(50),
+	AlbumName varchar(50),
+	NumberOfSongs int,
+	YearReleased year(4)
+)
+begin
+	declare Artist_ID int;
+	declare Artist_count int;
+	
+	select count(*) into Artist_count from Artists where ArtistName=NameOfArtist;
+	
+	
+	if Artist_count=0 then insert into Artists (ArtistName) values (NameOfArtist);
+		select LAST_INSERT_ID() into Artist_ID;
+	else select ArtistID into Artist_ID from Artists where ArtistName=NameOfArtist;	
+	end if;	
+	
+	insert into Albums (ArtistID, Title, NumberOfSongs, YearReleased) values (Artist_ID, AlbumName, NumberOfSongs, YearReleased);		
+end;
+//
+
+delimiter ;
+
+call AddAlbum('Foreigner', 'Records', 10, 1982);
+	
