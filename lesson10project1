@@ -1,0 +1,12 @@
+select A.Title,  
+sum(case when extract(quarter from P.DateOfPurchase)=1 then 1 else 0 end) as 'Q1',
+sum(case when extract(quarter from P.DateOfPurchase)=2 then 1 else 0 end) as 'Q2',
+sum(case when extract(quarter from P.DateOfPurchase)=3 then 1 else 0 end) as 'Q3',
+sum(case when extract(quarter from P.DateOfPurchase)=4 then 1 else 0 end) as 'Q4'
+from Albums as A
+left join Songs as S on (A.AlbumID=S.AlbumID)
+left join Purchases as P on (S.SongID=P.SongID)
+group by A.Title;
+
+
+
