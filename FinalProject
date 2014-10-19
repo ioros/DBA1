@@ -1,0 +1,173 @@
+# Create the tables
+
+create table ArticleAuthors
+(
+AuthorID int auto_increment not null,
+FirstName varchar(50) not null,
+LastName varchar(50) not null,
+EmailAddress varchar(100) not null,
+biography text not null,
+primary key(AuthorID)
+) engine=INNODB;
+
+create table Articles
+(
+ArticleID int auto_increment not null,
+AuthorID int not null,
+Title varchar(50) not null,
+Blurb varchar(100) not null,
+ArticleText text not null,
+DateCreated datetime not null,
+primary key(ArticleID)
+) engine=INNODB;
+
+create table ArticleCategories
+(
+ArticleID int not null,
+Category varchar(50) not null,
+primary key(ArticleID)
+) engine=INNODB;
+
+create table Commenters
+(
+CommenterID int auto_increment not null,
+FirstName varchar(50) not null,
+LastName varchar(50) not null,
+EmailAddress varchar(100) not null,
+primary key(CommenterID)
+) engine=INNODB;
+
+create table Comments
+(
+CommenterID int not null,
+ArticleID int not null,
+Notes text not null
+) engine=INNODB;
+
+create table ArticleViews
+(
+ArticleID int not null,
+DateViewed datetime not null
+) engine=INNODB;
+
+
+# Populate the tables with data
+
+# ArticleAuthors table
+insert into ArticleAuthors (FirstName, LastName, EmailAddress, biography) 
+values ('Walter', 'White', 'walter.white@aol.com', 'SQL programmer born in New Mexico');
+insert into ArticleAuthors (FirstName, LastName, EmailAddress, biography) 
+values ('Gustavo', 'Fring', 'gustavo.fring@aol.com', 'Entrepreneur with many connections');
+insert into ArticleAuthors (FirstName, LastName, EmailAddress, biography) 
+values ('Saul', 'Goodman', 'saul.goodman@aol.com', 'Independent developer with years of experience modifying system architecture');
+
+# Articles table
+insert into Articles (AuthorID, Title, Blurb, ArticleText, DateCreated)
+values (1, 'SQL For Dummies', 'Teaches beginners how to create and store data', 'This is an introductory text to help you master database management techniques', '2013-06-15 12:00:00');
+insert into Articles (AuthorID, Title, Blurb, ArticleText, DateCreated)
+values (1, 'MySQL: Learning the Command Line', 'Learn how to enter simple commands', 'You will learn how to use SELECT, UPDATE, DELETE and INSERT statements to populate data tables', '2013-07-15 12:00:00'); 
+insert into Articles (AuthorID, Title, Blurb, ArticleText, DateCreated)
+values (2, 'Database Management Made Fun!', 'Act as a database administrator by controlling the flow of information at your company', 'You will increase your company\'s productivity by following these 10 simple steps', '2013-08-15 12:00:00');
+insert into Articles (AuthorID, Title, Blurb, ArticleText, DateCreated)
+values (2, 'Essential Scripting for the Advanced User', 'Geared towards designing complex programs', 'We will incorporate the Object-Oriented programming approach to automate tasks', '2013-09-15 12:00:00');
+insert into Articles (AuthorID, Title, Blurb, ArticleText, DateCreated)
+values (3, 'SQL Administration 101', 'Learn to aggregate information by writing queries', 'Tables can be joined on primary keys, allowing the user to combine data based on a common theme', '2013-10-15 12:00:00');
+
+# ArticleCategories table
+insert into ArticleCategories (ArticleID, Category) values (1, 'SQL');
+insert into ArticleCategories (ArticleID, Category) values (2, 'Command Line');
+insert into ArticleCategories (ArticleID, Category) values (3, 'DBMS');
+insert into ArticleCategories (ArticleID, Category) values (4, 'Scripting');
+insert into ArticleCategories (ArticleID, Category) values (5, 'SQL');
+
+# Commenters table
+insert into Commenters (FirstName, LastName, EmailAddress) values ('Joe', 'Blow', 'joe.blow@gmail.com');
+insert into Commenters (FirstName, LastName, EmailAddress) values ('Roy', 'Rodgers', 'roy.rodgers@gmail.com');
+insert into Commenters (FirstName, LastName, EmailAddress) values ('Shirley', 'Temple', 'shirley.temple@gmail.com');
+insert into Commenters (FirstName, LastName, EmailAddress) values ('Jane', 'Doe', 'jane.doe@gmail.com');
+
+# Comments table
+insert into Comments (CommenterID, ArticleID, Notes) values (1, 1, 'I thought the article was very informative');
+insert into Comments (CommenterID, ArticleID, Notes) values (2, 2, 'The article was lacking in diagrams and screenshots');
+insert into Comments (CommenterID, ArticleID, Notes) values (3, 3, 'I would recommend this article to anyone who wants to learn more about databases');
+insert into Comments (CommenterID, ArticleID, Notes) values (4, 4, 'The article did not clarify concepts and was too vague');
+
+# ArticleViews table
+insert into ArticleViews (ArticleID, DateViewed) values (1, '2014-04-15 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (1, '2014-03-15 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (1, '2014-04-26 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (2, '2014-01-02 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (2, '2014-05-01 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (3, '2014-04-19 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (3, '2014-02-05 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (4, '2014-03-25 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (4, '2014-01-20 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (5, '2014-03-10 12:00:00');
+insert into ArticleViews (ArticleID, DateViewed) values (5, '2014-04-06 12:00:00');
+
+
+# Adds a comment to the Comments table and adds a record to the Commenters table for first time commenters
+drop procedure if exists AddComment;
+
+delimiter //
+
+create procedure AddComment(
+	Article_ID int,
+	First_Name varchar(50),
+	Last_Name varchar(50),
+	Email_Address varchar(100),
+	Article_Notes text
+)
+begin
+	declare Commenter_ID int;
+	declare Commenter_count int;
+	
+	select count(*) into Commenter_count from Commenters where LastName=Last_Name;
+	
+	
+	if Commenter_count=0 then insert into Commenters (FirstName, LastName, EmailAddress) values (First_Name, Last_Name, Email_Address);
+		select LAST_INSERT_ID() into Commenter_ID;
+	else select CommenterID into Commenter_ID from Commenters where LastName=Last_Name;	
+	end if;	
+	
+	insert into Comments (CommenterID, ArticleID, Notes) values (Commenter_ID, Article_ID, Article_Notes);		
+end;
+//
+
+delimiter ;
+
+call AddComment(3, 'Hank', 'Shroeder', 'hank.shroeder@aol.com', 'This article was hard to understand');
+
+
+# Creates a view that displays the author name, title of article and the category of the article
+create view ArticleDisplay as
+select A.FirstName, A.LastName, B.Title, C.Category
+from ArticleAuthors as A
+left join Articles as B on (A.AuthorID=B.AuthorID)
+left join ArticleCategories as C on (B.ArticleID=C.ArticleID);
+
+
+# Create a fulltext index on the Articles table
+alter table Articles engine=MyISAM;
+alter table Articles add fulltext (Blurb);
+
+select Title, Blurb, ArticleText from Articles where match(Blurb) against('complex') \G
+
+select Title, Blurb, ArticleText from Articles where match(Blurb) against('computer') \G
+
+
+# Pivot the ArticleViews table to show number of times the article was viewed in the last 10, 20 and 30 days
+select A.Title,  
+sum(case when (datediff(now(), B.DateViewed) > 0) and (datediff(now(), B.DateViewed) <= 10) then 1 else 0 end) as 'D10',
+sum(case when (datediff(now(), B.DateViewed) > 10) and (datediff(now(), B.DateViewed) <= 20) then 1 else 0 end) as 'D20',
+sum(case when (datediff(now(), B.DateViewed) > 20) and (datediff(now(), B.DateViewed) <= 30) then 1 else 0 end) as 'D30'
+from Articles as A
+left join ArticleViews as B on (A.ArticleID=B.ArticleID)
+group by A.Title;
+
+
+# Shows the article that has received the most views
+select A.Title, count(B.ArticleID) as NumberOfViews
+from Articles as A
+left join ArticleViews as B on (A.ArticleID=B.ArticleID)
+group by A.ArticleID order by NumberOfViews desc limit 0,1;
