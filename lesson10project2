@@ -1,0 +1,8 @@
+select A.Title,  
+sum(case when (datediff(now(), P.DateOfPurchase) > 0) and (datediff(now(), P.DateOfPurchase) <= 30) then 1 else 0 end) as 'D30',
+sum(case when (datediff(now(), P.DateOfPurchase) > 30) and (datediff(now(), P.DateOfPurchase) <= 60) then 1 else 0 end) as 'D60',
+sum(case when (datediff(now(), P.DateOfPurchase) > 60) and (datediff(now(), P.DateOfPurchase) <= 90) then 1 else 0 end) as 'D90'
+from Albums as A
+left join Songs as S on (A.AlbumID=S.AlbumID)
+left join Purchases as P on (S.SongID=P.SongID)
+group by A.Title;
