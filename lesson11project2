@@ -1,0 +1,7 @@
+select AlbumID, Title, AlbumDescription, 'no' as QueryExpansion, 'vast' as Query from Albums where match(AlbumDescription) against('vast')
+union
+select AlbumID, Title, AlbumDescription, 'no' as QueryExpansion, 'singing' as Query from Albums where match(AlbumDescription) against('singing') 
+union
+select AlbumID, Title, AlbumDescription, 'yes' as QueryExpansion, 'vast' as Query from Albums where match(AlbumDescription) against('vast' WITH QUERY EXPANSION)
+union
+select AlbumID, Title, AlbumDescription, 'yes' as QueryExpansion, 'singing' as Query from Albums where match(AlbumDescription) against('singing' WITH QUERY EXPANSION);
